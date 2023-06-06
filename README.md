@@ -52,6 +52,7 @@ cd UniSeg
   * Run `nnUNet_plan_and_preprocess -t 11 --verify_dataset_integrity --planner3d AutoPETPlanner3D`
   * Move `splits_final.pkl` of each dataset to the address of its pre-processed dataset. For example, '***/nnUNet_preprocessed/Task091_MOTS/splits_final.pkl'. Note that, to follow [DoDNet](https://github.com/jianpengz/DoDNet), we provide `splits_final.pkl` of the MOTS dataset in `Upstream/MOTS_data_split/splits_final.pkl`.
   * Run `Python merge_each_sub_dataet.py` to form a new dataset.
+  * To make sure that we use the same data split, we provide the final data split in `Upstream/splits_final_11_tasks.pkl`
 
 
 ### Training 
