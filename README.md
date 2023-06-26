@@ -68,7 +68,7 @@ cd UniSeg
 
 ### Downstream Tasks
 * `cd Downstream`
-* Download [BTCV dataset](https://www.synapse.org/#!Synapse:syn3193805/wiki/217789) (Synapse is now closed due to being updated).
+* Download [BTCV dataset](https://www.synapse.org/#!Synapse:syn3193805/wiki/217789).
 * Download [VS dataset](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053).
 * Run `Python Convert_BTCV_to_nnUNet_dataset.py` to pre-process the BTCV dataset and generate `splits_final.pkl`.
 * Run `Python Convert_VSseg_to_nnUNet_dataset.py` to pre-process the VS dataset and generate `splits_final.pkl`.
