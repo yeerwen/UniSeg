@@ -3,7 +3,7 @@ This is the official pytorch implementation of our MICCAI 2023 paper "[UniSeg: A
 In this paper, we propose a Prompt-Driven Universal Segmentation model (UniSeg) to segment multiple organs, tumors, and vertebrae on 3D medical images with diverse modalities and domains.
 
 <div align="center">
-  <img width="80%" alt="UniSeg illustration" src="github/Overview.png">
+  <img width="100%" alt="UniSeg illustration" src="github/Overview.png">
 </div>
 
 ## Requirements
