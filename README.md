@@ -39,12 +39,12 @@ cd UniSeg
 * Step 2:
   * `cd Upstream`
   * Note that the output paths of the preprocessed datasets should be in the `$nnUNet_raw_data_base/nnUNet_raw_data/` directory.
-  * Run `Python prepare_Kidney_Dataset.py` to normalize the name of the volumes for the Kidney dataset.
-  * Run `Python Convert_MOTS_to_nnUNet_dataset.py` to pre-process the MOTS dataset.
-  * Run `Python Convert_VerSe20_to_nnUNet_dataset.py` to pre-process the VerSe20 dataset and generate `splits_final.pkl`.
-  * Run `Python Convert_Prostate_to_nnUNet_dataset.py` to pre-process the Prostate dataset and generate `splits_final.pkl`.
-  * Run `Python Convert_BraTS21_to_nnUNet_dataset.py` to pre-process the BraTS21 dataset and generate `splits_final.pkl`.
-  * Run `Python Convert_AutoPET_to_nnUNet_dataset.py` to pre-process the AutoPET2022 dataset and generate `splits_final.pkl`.
+  * Run `python prepare_Kidney_Dataset.py` to normalize the name of the volumes for the Kidney dataset.
+  * Run `python Convert_MOTS_to_nnUNet_dataset.py` to pre-process the MOTS dataset.
+  * Run `python Convert_VerSe20_to_nnUNet_dataset.py` to pre-process the VerSe20 dataset and generate `splits_final.pkl`.
+  * Run `python Convert_Prostate_to_nnUNet_dataset.py` to pre-process the Prostate dataset and generate `splits_final.pkl`.
+  * Run `python Convert_BraTS21_to_nnUNet_dataset.py` to pre-process the BraTS21 dataset and generate `splits_final.pkl`.
+  * Run `python Convert_AutoPET_to_nnUNet_dataset.py` to pre-process the AutoPET2022 dataset and generate `splits_final.pkl`.
 
 * Step 3:
   * Copy `Upstream/nnunet` to replace `nnunet`, which is installed by `pip install nnunet` (the address is usually 'anaconda3/envs/your envs/lib/python3.8/site-packages/nnunet').
@@ -54,7 +54,7 @@ cd UniSeg
   * Run `nnUNet_plan_and_preprocess -t 21 --verify_dataset_integrity --planner3d BraTS21Planner3D`.
   * Run `nnUNet_plan_and_preprocess -t 11 --verify_dataset_integrity --planner3d AutoPETPlanner3D`.
   * Move `splits_final.pkl` of each dataset to the address of its pre-processed dataset. For example, '***/nnUNet_preprocessed/Task091_MOTS/splits_final.pkl'. Note that, to follow [DoDNet](https://github.com/jianpengz/DoDNet), we provide `splits_final.pkl` of the MOTS dataset in `Upstream/MOTS_data_split/splits_final.pkl`.
-  * Run `Python merge_each_sub_dataet.py` to form a new dataset.
+  * Run `python merge_each_sub_dataet.py` to form a new dataset.
   * To make sure that we use the same data split, we provide the final data split in `Upstream/splits_final_11_tasks.pkl`.
 
 
@@ -70,8 +70,8 @@ cd UniSeg
 * `cd Downstream`
 * Download [BTCV dataset](https://www.synapse.org/#!Synapse:syn3193805/wiki/217789).
 * Download [VS dataset](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053).
-* Run `Python Convert_BTCV_to_nnUNet_dataset.py` to pre-process the BTCV dataset and generate `splits_final.pkl`.
-* Run `Python Convert_VSseg_to_nnUNet_dataset.py` to pre-process the VS dataset and generate `splits_final.pkl`.
+* Run `python Convert_BTCV_to_nnUNet_dataset.py` to pre-process the BTCV dataset and generate `splits_final.pkl`.
+* Run `python Convert_VSseg_to_nnUNet_dataset.py` to pre-process the VS dataset and generate `splits_final.pkl`.
 * Update the address of the pre-trained model in the 'Downstream/nnunet/training/network_training/UniSeg_Trainer_DS.py' file (line 97)
 * Copy `Downstream/nnunet` to replace `nnunet`, which is installed by `pip install nnunet` (the address is usually 'anaconda3/envs/your envs/lib/python3.8/site-packages/nnunet').
 * Run `nnUNet_plan_and_preprocess -t 60 --verify_dataset_integrity`.
