@@ -15,22 +15,30 @@ CuDNN 8.3.2.44
 ## Usage
 
 ### Installation
-* Clone this repo
+* Clone this repo.
 ```
 git clone https://github.com/yeerwen/UniSeg.git
 cd UniSeg
 ```
 
 ### Data Preparation
-* Download [MOTS dataset](https://github.com/jianpengz/DoDNet)
-* Download [VerSe20 dataset](https://github.com/anjany/verse)
-* Download [Prostate dataset](https://liuquande.github.io/SAML)
-* Download [BraTS21 dataset](https://www.synapse.org/#!Synapse:syn25829067/wiki/610863)
-* Download [AutoPET2022 dataset](https://autopet.grand-challenge.org)
+* Download [MOTS dataset](https://github.com/jianpengz/DoDNet).
+* Download [VerSe20 dataset](https://github.com/anjany/verse).
+* Download [Prostate dataset](https://liuquande.github.io/SAML).
+* Download [BraTS21 dataset](https://www.synapse.org/#!Synapse:syn25829067/wiki/610863).
+* Download [AutoPET2022 dataset](https://autopet.grand-challenge.org).
 
 ### Pre-processing
 * Step 1:
+  * Install nnunet by `pip install nnunet`.
+  * Set path, for example:
+    * `export nnUNet_raw_data_base="/data/userdisk0/ywye/nnUNet_raw"`
+    * `export nnUNet_preprocessed="/erwen_SSD/1T/nnUNet_preprocessed"`
+    * `export RESULTS_FOLDER="/data/userdisk0/ywye/nnUNet_trained_models"`
+
+* Step 2:
   * `cd Upstream`
+  * Note that the output paths of the preprocessed datasets should be in the `$nnUNet_raw_data_base/nnUNet_raw_data/` directory.
   * Run `Python prepare_Kidney_Dataset.py` to normalize the name of the volumes for the Kidney dataset.
   * Run `Python Convert_MOTS_to_nnUNet_dataset.py` to pre-process the MOTS dataset.
   * Run `Python Convert_VerSe20_to_nnUNet_dataset.py` to pre-process the VerSe20 dataset and generate `splits_final.pkl`.
@@ -38,40 +46,48 @@ cd UniSeg
   * Run `Python Convert_BraTS21_to_nnUNet_dataset.py` to pre-process the BraTS21 dataset and generate `splits_final.pkl`.
   * Run `Python Convert_AutoPET_to_nnUNet_dataset.py` to pre-process the AutoPET2022 dataset and generate `splits_final.pkl`.
 
-* Step 2:
-  * Install nnunet by `pip install nnunet`
-  * Set path, for example:
-    * `export nnUNet_raw_data_base="/data/userdisk0/ywye/nnUNet_raw"`
-    * `export nnUNet_preprocessed="/erwen_SSD/1T/nnUNet_preprocessed"`
-    * `export RESULTS_FOLDER="/data/userdisk0/ywye/nnUNet_trained_models"`
+* Step 3:
   * Copy `Upstream/nnunet` to replace `nnunet`, which is installed by `pip install nnunet` (the address is usually 'anaconda3/envs/your envs/lib/python3.8/site-packages/nnunet').
-  * Run `nnUNet_plan_and_preprocess -t 91 --verify_dataset_integrity --planner3d MOTSPlanner3D`
-  * Run `nnUNet_plan_and_preprocess -t 37 --verify_dataset_integrity --planner3d VerSe20Planner3D`
-  * Run `nnUNet_plan_and_preprocess -t 20 --verify_dataset_integrity --planner3d ProstatePlanner3D`
-  * Run `nnUNet_plan_and_preprocess -t 21 --verify_dataset_integrity --planner3d BraTS21Planner3D`
-  * Run `nnUNet_plan_and_preprocess -t 11 --verify_dataset_integrity --planner3d AutoPETPlanner3D`
+  * Run `nnUNet_plan_and_preprocess -t 91 --verify_dataset_integrity --planner3d MOTSPlanner3D`.
+  * Run `nnUNet_plan_and_preprocess -t 37 --verify_dataset_integrity --planner3d VerSe20Planner3D`.
+  * Run `nnUNet_plan_and_preprocess -t 20 --verify_dataset_integrity --planner3d ProstatePlanner3D`.
+  * Run `nnUNet_plan_and_preprocess -t 21 --verify_dataset_integrity --planner3d BraTS21Planner3D`.
+  * Run `nnUNet_plan_and_preprocess -t 11 --verify_dataset_integrity --planner3d AutoPETPlanner3D`.
   * Move `splits_final.pkl` of each dataset to the address of its pre-processed dataset. For example, '***/nnUNet_preprocessed/Task091_MOTS/splits_final.pkl'. Note that, to follow [DoDNet](https://github.com/jianpengz/DoDNet), we provide `splits_final.pkl` of the MOTS dataset in `Upstream/MOTS_data_split/splits_final.pkl`.
   * Run `Python merge_each_sub_dataet.py` to form a new dataset.
-  * To make sure that we use the same data split, we provide the final data split in `Upstream/splits_final_11_tasks.pkl`
+  * To make sure that we use the same data split, we provide the final data split in `Upstream/splits_final_11_tasks.pkl`.
 
 
-### Training 
-* Move `Upstream/run_ssl.sh` and `Upstream/UniSeg_Metrics_test.py` to `"***/nnUNet_trained_models/"`
-* cd `***/nnUNet_trained_models/`
+### Training and Test
+* Move `Upstream/run_ssl.sh` and `Upstream/UniSeg_Metrics_test.py` to `"***/nnUNet_trained_models/"`.
+* cd `***/nnUNet_trained_models/`.
 * Run `sh run_ssl.sh` for training (GPU Memory Cost: ~10GB, Time Cost: ~210s each epoch).
 
 ### Pretrained weights 
 * Upstream trained model is available in [UniSeg_11_Tasks](https://drive.google.com/file/d/1Ldgd5Ebc8VQrvGIpIgzUG2PTSDPUpEQJ/view?usp=sharing).
 
 ### Downstream Tasks
-* Comming soon.
+* `cd Downstream`
+* Download [BTCV dataset](https://www.synapse.org/#!Synapse:syn3193805/wiki/217789) (Synapse is now closed due to being updated).
+* Download [VS dataset](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053).
+* Run `Python Convert_BTCV_to_nnUNet_dataset.py` to pre-process the BTCV dataset and generate `splits_final.pkl`.
+* Run `Python Convert_VSseg_to_nnUNet_dataset.py` to pre-process the VS dataset and generate `splits_final.pkl`.
+* Update the address of the pre-trained model in the 'Downstream/nnunet/training/network_training/UniSeg_Trainer_DS.py' file (line 97)
+* Copy `Downstream/nnunet` to replace `nnunet`, which is installed by `pip install nnunet` (the address is usually 'anaconda3/envs/your envs/lib/python3.8/site-packages/nnunet').
+* Run `nnUNet_plan_and_preprocess -t 60 --verify_dataset_integrity`.
+* Run `nnUNet_plan_and_preprocess -t 61 --verify_dataset_integrity`.
+* Move `splits_final.pkl` of two datasets to the addresses of their pre-processed datasets.
+* To make sure that we use the same data split for the downstream datasets, we provide the final data splits in `Downstream/splits_final_BTCV.pkl` and `Downstream/splits_final_VS.pkl`.
+* Training and Test:
+    * For the BTCV dataset: `CUDA_VISIBLE_DEVICES=0 nnUNet_n_proc_DA=32 nnUNet_train 3d_fullres UniSeg_Trainer_DS 60 0`
+    * For the VS dataset: `CUDA_VISIBLE_DEVICES=0 nnUNet_n_proc_DA=32 nnUNet_train 3d_fullres UniSeg_Trainer_DS 61 0`
 
 ## To do
 - [x] Dataset Links
 - [x] Pre-processing Code
 - [x] Upstream Code Release
 - [x] Upstream Trained Model
-- [ ] Downstream Code Release
+- [x] Downstream Code Release
 
 
 ## Citation
