@@ -88,7 +88,7 @@ cd UniSeg
 - [x] Upstream Code Release
 - [x] Upstream Trained Model
 - [x] Downstream Code Release
-- [ ] Inference for Upstream Trained Model on New Data
+- [ ] Inference of Upstream Trained Model on New Data
 
 ## Citation
 If this code is helpful for your study, please cite:
