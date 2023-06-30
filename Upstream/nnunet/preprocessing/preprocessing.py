@@ -54,6 +54,7 @@ def resample_patient(data, seg, original_spacing, target_spacing, order_data=3, 
 
     :return:
     """
+
     assert not ((data is None) and (seg is None))
     if data is not None:
         assert len(data.shape) == 4, "data must be c x y z"
@@ -103,6 +104,7 @@ def resample_patient(data, seg, original_spacing, target_spacing, order_data=3, 
         seg_reshaped = resample_data_or_seg(seg, new_shape, True, axis, order_seg, do_separate_z, order_z=order_z_seg)
     else:
         seg_reshaped = None
+
     return data_reshaped, seg_reshaped
 
 
@@ -257,6 +259,7 @@ class GenericPreprocessor(object):
         }
         print("before:", before, "\nafter: ", after, "\n")
 
+
         if seg is not None:  # hippocampus 243 has one voxel with -2 as label. wtf?
             seg[seg < -1] = 0
 
@@ -318,6 +321,7 @@ class GenericPreprocessor(object):
 
         data, seg, properties = self.resample_and_normalize(data, target_spacing, properties, seg,
                                                             force_separate_z=force_separate_z)
+
         return data.astype(np.float32), seg, properties
 
     def _run_internal(self, target_spacing, case_identifier, output_folder_stage, cropped_output_dir, force_separate_z,

@@ -82,13 +82,41 @@ cd UniSeg
     * For the BTCV dataset: `CUDA_VISIBLE_DEVICES=0 nnUNet_n_proc_DA=32 nnUNet_train 3d_fullres UniSeg_Trainer_DS 60 0`
     * For the VS dataset: `CUDA_VISIBLE_DEVICES=0 nnUNet_n_proc_DA=32 nnUNet_train 3d_fullres UniSeg_Trainer_DS 61 0`
 
+### Prediction on New Data
+* `cd Upstream`
+* Copy `Upstream/nnunet` to replace `nnunet`, which is installed by `pip install nnunet`
+* Run `CUDA_VISIBLE_DEVICES=1 nnUNet_n_proc_DA=32 nnUNet_predict -i /data/userdisk0/ywye/nnUNet_raw/nnUNet_raw_data/Test/Image/ -o /data/userdisk0/ywye/nnUNet_raw/nnUNet_raw_data/Test/Predict/10/ -t 97 -m 3d_fullres  -tr UniSeg_Trainer -f 0 -task_id 7 -exp_name UniSeg_Trainer -num_image 1 -modality CT -spacing 3.0,1.5,1.5`
+  * `-i`: Path of the input image(s), name format of the input image: name_0000.nii.gz (name_0001.nii.gz)
+  * `-o`: Path of the output mask(s)
+  * `-task_id` Selected Task. 
+    * `-1` means predicting all tasks under a specific modality. 
+    * 0: "liver and liver tumor"
+    * 1: "kidney and kidney tumor"
+    * 2: "hepatic vessel and hepatic tumor"
+    * 3: "pancreas and pancreas tumor"
+    * 4: "colon tumor"
+    * 5: "lung tumor"
+    * 6: "spleen" 
+    * 7: "vertebrae"
+    * 8: "prostate"
+    * "9": "brain tumors: edema, non-enhancing, and enhancing"
+    * "10": "whole-body tumors"
+  * `-num_image`: Channel number of the input image(s)
+  * `-modality`: "CT" or "MR" or "CT,PET"
+  * `-spacing`: Spacing of resampled image(s)
+
+<div align="center">
+  <img width="100%" alt="UniSeg illustration" src="github/Predictions.png">
+</div>
+
+
 ## To do
 - [x] Dataset Links
 - [x] Pre-processing Code
 - [x] Upstream Code Release
 - [x] Upstream Trained Model
 - [x] Downstream Code Release
-- [ ] Inference of Upstream Trained Model on New Data
+- [x] Inference of Upstream Trained Model on New Data
 
 ## Citation
 If this code is helpful for your study, please cite:

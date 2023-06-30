@@ -40,6 +40,7 @@ class DoDNetPreprocessor(GenericPreprocessor):
             'data.shape (data is resampled)': data.shape
         }
         print("before:", before, "\nafter: ", after, "\n")
+        print("modality", self.normalization_scheme_per_modality)
 
         if seg is not None:  # hippocampus 243 has one voxel with -2 as label. wtf?
             seg[seg < -1] = 0
@@ -51,15 +52,15 @@ class DoDNetPreprocessor(GenericPreprocessor):
         assert len(self.normalization_scheme_per_modality) == len(data), "self.normalization_scheme_per_modality " \
                                                                          "must have as many entries as data has " \
                                                                          "modalities"
-        assert len(self.use_nonzero_mask) == len(data), "self.use_nonzero_mask must have as many entries as data" \
-                                                        " has modalities"
+        # assert len(self.use_nonzero_mask) == len(data), "self.use_nonzero_mask must have as many entries as data" \
+        #                                                 " has modalities"
 
         for c in range(len(data)):
             scheme = self.normalization_scheme_per_modality[c]
             print("<", scheme, ">")
             if scheme == "CT":
                 # clip to lb and ub from train data foreground and use foreground mn and sd from training data
-                assert self.intensityproperties is not None, "ERROR: if there is a CT then we need intensity properties"
+                # assert self.intensityproperties is not None, "ERROR: if there is a CT then we need intensity properties"
                 # mean_intensity = self.intensityproperties[c]['mean']
                 # std_intensity = self.intensityproperties[c]['sd']
                 lower_bound = -325

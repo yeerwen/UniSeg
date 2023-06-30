@@ -30,7 +30,7 @@ from nnunet.postprocessing.connected_components import load_remove_save, load_po
 from nnunet.training.model_restore import load_model_and_checkpoint_files
 from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
 from nnunet.utilities.one_hot_encoding import to_one_hot
-
+from collections import OrderedDict
 
 def preprocess_save_to_queue(preprocess_fn, q, list_of_lists, output_files, segs_from_prev_stage, classes,
                              transpose_forward):
@@ -38,12 +38,13 @@ def preprocess_save_to_queue(preprocess_fn, q, list_of_lists, output_files, segs
     # sys.stdout = open(os.devnull, 'w')
 
     errors_in = []
+    print("list_of_lists", list_of_lists)
     for i, l in enumerate(list_of_lists):
         try:
             output_file = output_files[i]
             print("preprocessing", output_file)
             d, _, dct = preprocess_fn(l)
-            # print(output_file, dct)
+            print(output_file, dct)
             if segs_from_prev_stage[i] is not None:
                 assert isfile(segs_from_prev_stage[i]) and segs_from_prev_stage[i].endswith(
                     ".nii.gz"), "segs_from_prev_stage" \
@@ -132,7 +133,8 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
                   num_threads_nifti_save, segs_from_prev_stage=None, do_tta=True, mixed_precision=True,
                   overwrite_existing=False,
                   all_in_gpu=False, step_size=0.5, checkpoint_name="model_final_checkpoint",
-                  segmentation_export_kwargs: dict = None, disable_postprocessing: bool = False):
+                  segmentation_export_kwargs: dict = None, disable_postprocessing: bool = False, task_id: int = 0,
+                  modality_used: list = None, num_image: int = 0, spacing: str = None):
     """
     :param segmentation_export_kwargs:
     :param model: folder where the model is saved, must contain fold_x subfolders
@@ -182,8 +184,16 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
 
     print("loading parameters for folds,", folds)
     trainer, params = load_model_and_checkpoint_files(model, folds, mixed_precision=mixed_precision,
-                                                      checkpoint_name=checkpoint_name)
+                       checkpoint_name=checkpoint_name)
+    trainer.normalization_schemes = modality_used
 
+    trainer.use_mask_for_norm = OrderedDict([(sub_image, False) for sub_image in range(num_image)])
+    str_spacing = spacing.split(",")
+    str_spacing = [float(sub_spacing) for sub_spacing in str_spacing]
+    trainer.plans['plans_per_stage'][trainer.stage]['current_spacing'] = str_spacing
+    # trainer.use_nonzero_mask =
+    print("params len", len(params))
+    assert len(params) == 1
     if segmentation_export_kwargs is None:
         if 'segmentation_export_params' in trainer.plans.keys():
             force_separate_z = trainer.plans['segmentation_export_params']['force_separate_z']
@@ -202,6 +212,24 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
     preprocessing = preprocess_multithreaded(trainer, list_of_lists, cleaned_output_files, num_threads_preprocessing,
                                              segs_from_prev_stage)
     print("starting prediction...")
+    if modality_used[0] == "CT" and num_image == 1:
+        couple_id = {"live": [1, 2], "kidn": [3, 4], "hepa": [5, 6], "panc": [7, 8], "colo": [9], "lung": [10],
+                     "sple": [11], "sub-": [12]}
+        id_2_name = {-1: "all", 0: "live", 1: "kidn", 2: "hepa", 3: "panc", 4: "colo", 5: "lung", 6: "sple", 7: "sub-"}
+    elif modality_used[0] == "MR" and num_image == 1:
+        couple_id = {"pros": [13], "BraT": [14, 15, 16]}
+        id_2_name = {-1: "all", 8: "pros", 9: "BraT"}
+    elif modality_used[0] == "CT" and modality_used[1] == "PET"  and num_image == 2:
+        couple_id = {"PETC": [17]}
+        id_2_name = {-1: "all", 10: "PETC"}
+    else:
+        print("inavailable modalities!", modality_used)
+        exit()
+
+    print("selected task id is ", id_2_name[task_id])
+
+    # self.task = {}
+    # self.task_class = {0: 3, 1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 4, 10: 2}
     all_output_files = []
     for preprocessed in preprocessing:
         output_filename, (d, dct) = preprocessed
@@ -211,19 +239,45 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
             os.remove(d)
             d = data
 
-        print("predicting", output_filename)
+        print("predicting", output_filename, d.shape)
         trainer.load_checkpoint_ram(params[0], False)
-        softmax = trainer.predict_preprocessed_data_return_seg_and_softmax(
-            d, do_mirroring=do_tta, mirror_axes=trainer.data_aug_params['mirror_axes'], use_sliding_window=True,
-            step_size=step_size, use_gaussian=True, all_in_gpu=all_in_gpu,
-            mixed_precision=mixed_precision)[1]
 
-        for p in params[1:]:
-            trainer.load_checkpoint_ram(p, False)
-            softmax += trainer.predict_preprocessed_data_return_seg_and_softmax(
+        if task_id != -1:
+            softmax = trainer.predict_preprocessed_data_return_seg_and_softmax(
                 d, do_mirroring=do_tta, mirror_axes=trainer.data_aug_params['mirror_axes'], use_sliding_window=True,
                 step_size=step_size, use_gaussian=True, all_in_gpu=all_in_gpu,
-                mixed_precision=mixed_precision)[1]
+                mixed_precision=mixed_precision, task_id=np.array([task_id]))[1]
+
+            # for p in params[1:]:
+            #     trainer.load_checkpoint_ram(p, False)
+            #     softmax += trainer.predict_preprocessed_data_return_seg_and_softmax(
+            #         d, do_mirroring=do_tta, mirror_axes=trainer.data_aug_params['mirror_axes'], use_sliding_window=True,
+            #         step_size=step_size, use_gaussian=True, all_in_gpu=all_in_gpu,
+            #         mixed_precision=mixed_precision)[1]
+        else:
+
+            total_argmax = np.zeros(shape = (d.shape[1], d.shape[2], d.shape[3]))
+            print("total softmax: ", total_argmax.shape)
+            for now_id in range(len(id_2_name)-1):
+                now_id_name =  id_2_name[now_id]
+                afore_index = couple_id[now_id_name]
+
+
+                softmax = trainer.predict_preprocessed_data_return_seg_and_softmax(
+                    d, do_mirroring=do_tta, mirror_axes=trainer.data_aug_params['mirror_axes'], use_sliding_window=True,
+                    step_size=step_size, use_gaussian=True, all_in_gpu=all_in_gpu,
+                    mixed_precision=mixed_precision, task_id= np.array([now_id]))[1]
+                softmax_argmax = np.argmax(softmax, axis=0)
+                print(now_id, "softmax", softmax_argmax.shape)
+                soft_index = 1
+                for tmp_index in afore_index:
+                    total_argmax[softmax_argmax == soft_index] = tmp_index
+                    soft_index += 1
+            total_softmax = np.zeros(shape=(18, d.shape[1], d.shape[2], d.shape[3]))
+            for sub_class in range(total_softmax.shape[0]):
+                total_softmax[sub_class][total_argmax == sub_class] = 1
+
+            softmax = total_softmax
 
         if len(params) > 1:
             softmax /= len(params)
@@ -607,7 +661,8 @@ def predict_from_folder(model: str, input_folder: str, output_folder: str, folds
                         part_id: int, num_parts: int, tta: bool, mixed_precision: bool = True,
                         overwrite_existing: bool = True, mode: str = 'normal', overwrite_all_in_gpu: bool = None,
                         step_size: float = 0.5, checkpoint_name: str = "model_final_checkpoint",
-                        segmentation_export_kwargs: dict = None, disable_postprocessing: bool = False):
+                        segmentation_export_kwargs: dict = None, disable_postprocessing: bool = False, task_id: int = 0,
+                        num_image: int = 1, modality_used: list =None, spacing: str = None):
     """
         here we use the standard naming scheme to generate list_of_lists and output_files needed by predict_cases
 
@@ -630,10 +685,10 @@ def predict_from_folder(model: str, input_folder: str, output_folder: str, folds
     shutil.copy(join(model, 'plans.pkl'), output_folder)
 
     assert isfile(join(model, "plans.pkl")), "Folder with saved model weights must contain a plans.pkl file"
-    expected_num_modalities = load_pickle(join(model, "plans.pkl"))['num_modalities']
+    # expected_num_modalities = load_pickle(join(model, "plans.pkl"))['num_modalities']
 
     # check input folder integrity
-    case_ids = check_input_folder_and_return_caseIDs(input_folder, expected_num_modalities)
+    case_ids = check_input_folder_and_return_caseIDs(input_folder, num_image)
 
     output_files = [join(output_folder, i + ".nii.gz") for i in case_ids]
     all_files = subfiles(input_folder, suffix=".nii.gz", join=False, sort=True)
@@ -661,7 +716,8 @@ def predict_from_folder(model: str, input_folder: str, output_folder: str, folds
                              all_in_gpu=all_in_gpu,
                              step_size=step_size, checkpoint_name=checkpoint_name,
                              segmentation_export_kwargs=segmentation_export_kwargs,
-                             disable_postprocessing=disable_postprocessing)
+                             disable_postprocessing=disable_postprocessing, task_id=task_id, modality_used=modality_used, num_image=num_image,
+                             spacing=spacing)
     elif mode == "fast":
         if overwrite_all_in_gpu is None:
             all_in_gpu = False

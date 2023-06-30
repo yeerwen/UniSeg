@@ -439,9 +439,15 @@ class nnUNetTrainer(NetworkTrainer):
         preprocessor = preprocessor_class(self.normalization_schemes, self.use_mask_for_norm,
                                           self.transpose_forward, self.intensity_properties)
 
+        print(self.plans['plans_per_stage'][self.stage]['current_spacing'], self.normalization_schemes, self.use_mask_for_norm)
         d, s, properties = preprocessor.preprocess_test_case(input_files,
                                                              self.plans['plans_per_stage'][self.stage][
                                                                  'current_spacing'])
+
+        # d, s, properties = preprocessor.preprocess_test_case(input_files,
+        #                                                      self.plans['plans_per_stage'][self.stage][
+        #                                                          'current_spacing'])
+        print("finish preprocess")
         return d, s, properties
 
     def preprocess_predict_nifti(self, input_files: List[str], output_file: str = None,

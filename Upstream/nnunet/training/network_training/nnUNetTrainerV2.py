@@ -56,7 +56,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
         """
         - replaced get_default_augmentation with get_moreDA_augmentation
         - enforce to only run this code once
-        - loss function wrapper for deep supervision
+        - loss function wrapper for deep supervisionresample_and_normalize
 
         :param training:
         :param force_load_plans:

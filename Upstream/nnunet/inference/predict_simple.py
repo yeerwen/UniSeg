@@ -123,6 +123,14 @@ def main():
                              'the required vram. If you want to disable mixed precision you can set this flag. Note '
                              'that this is not recommended (mixed precision is ~2x faster!)')
 
+    parser.add_argument('-task_id', required=True, type=int, choices=[-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                        help='Task id, if task id == 0, we will predict all targets.')
+
+    parser.add_argument('-exp_name', type=str, required=True, default=None, help='exp name')
+    parser.add_argument('-num_image', type=int, required=True, default=1, help='num image')
+    parser.add_argument('-modality', type=str, required=True, default=1)
+    parser.add_argument('-spacing', type=str, required=True, default=1)
+
     args = parser.parse_args()
     input_folder = args.input_folder
     output_folder = args.output_folder
@@ -135,6 +143,7 @@ def main():
     num_threads_nifti_save = args.num_threads_nifti_save
     disable_tta = args.disable_tta
     step_size = args.step_size
+    modality_used = args.modality.split(",")
     # interp_order = args.interp_order
     # interp_order_z = args.interp_order_z
     # force_separate_z = args.force_separate_z
@@ -210,7 +219,7 @@ def main():
     else:
         trainer = trainer_class_name
 
-    model_folder_name = join(network_training_output_dir, model, task_name, trainer + "__" +
+    model_folder_name = join(network_training_output_dir+args.exp_name, model, task_name, trainer + "__" +
                               args.plans_identifier)
     print("using model stored in ", model_folder_name)
     assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
@@ -220,7 +229,7 @@ def main():
                         num_threads_nifti_save, lowres_segmentations, part_id, num_parts, not disable_tta,
                         overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
                         mixed_precision=not args.disable_mixed_precision,
-                        step_size=step_size, checkpoint_name=args.chk)
+                        step_size=step_size, checkpoint_name=args.chk, task_id=args.task_id, num_image=args.num_image, modality_used=modality_used, spacing=args.spacing)
     end = time()
     save_json(end - st, join(output_folder, 'prediction_time.txt'))
 

@@ -90,9 +90,8 @@ def main():
                              'file, for example model_final_checkpoint.model). Will only be used when actually training. '
                              'Optional. Beta. Use with caution.')
     parser.add_argument('-exp_name', type=str, required=True, default=None,
-                        help='path to nnU-Net checkpoint file to be used as pretrained model (use .model '
-                             'file, for example model_final_checkpoint.model). Will only be used when actually training. '
-                             'Optional. Beta. Use with caution.')
+                        help='exp name')
+
 
     args = parser.parse_args()
 
