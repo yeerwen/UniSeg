@@ -488,10 +488,10 @@ class DataLoader3D_UniSeg(SlimDataLoaderBase):
 
         selected_keys = np.random.choice(self.list_of_keys_task[choice_id], self.batch_size, True, None)
         # print(selected_keys, self.batch_size, selected_keys.shape) #2, [2,]
-        if choice_id == 9:
+        if choice_id == 9: #BraTS21 4 channel input
             data = np.zeros((self.batch_size, 4,  *self.patch_size), dtype=np.float32)
             seg = np.zeros((self.batch_size, 1,  *self.patch_size), dtype=np.float32)
-        elif choice_id == 10:
+        elif choice_id == 10: #AutoPET20 2 channel input
             data = np.zeros((self.batch_size, 2, *self.patch_size), dtype=np.float32)
             seg = np.zeros((self.batch_size, 1, *self.patch_size), dtype=np.float32)
         else:

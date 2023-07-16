@@ -36,17 +36,18 @@ class UniSeg_Trainer(nnUNetTrainerV2):
         self.task_class = {0: 3, 1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 4, 10: 2}
         print("task_class", self.task_class)
         self.visual_epoch = -1
-        self.num_batches_per_epoch = 550
-        self.toal_task_num = 11
+        self.total_task_num = 11
+        self.num_batches_per_epoch = int(50 * self.total_task_num)
         print("num batches per epoch:", self.num_batches_per_epoch)
-        print("total task num", self.toal_task_num)
+        print("total task num", self.total_task_num)
         print(os.getcwd())
         if os.path.exists(os.path.join(self.output_folder, "code")):
             shutil.rmtree(os.path.join(self.output_folder, "code"))
         dirname, _ = os.path.split(os.path.abspath(__file__))
         shutil.copytree(os.path.join(dirname.split("nnunet")[0], "nnunet"), os.path.join(self.output_folder, "code"))
         print("copy code successfully!")
-        self.task_index = [0 for _ in range(self.toal_task_num)]
+        self.task_index = [0 for _ in range(self.total_task_num)]
+
     def initialize_network(self):
         """
         - momentum 0.99
@@ -74,7 +75,7 @@ class UniSeg_Trainer(nnUNetTrainerV2):
         dropout_op_kwargs = {'p': 0, 'inplace': True}
         net_nonlin = nn.LeakyReLU
         net_nonlin_kwargs = {'negative_slope': 1e-2, 'inplace': True}
-        self.network = UniSeg_model(self.patch_size, self.toal_task_num, [1, 2, 4], self.base_num_features, self.num_classes,
+        self.network = UniSeg_model(self.patch_size, self.total_task_num, [1, 2, 4], self.base_num_features, self.num_classes,
                                     len(self.net_num_pool_op_kernel_sizes),
                                     self.conv_per_stage, 2, conv_op, norm_op, norm_op_kwargs, dropout_op,
                                     dropout_op_kwargs,
@@ -141,7 +142,8 @@ class UniSeg_Trainer(nnUNetTrainerV2):
                     self.data_aug_params,
                     deep_supervision_scales=self.deep_supervision_scales,
                     pin_memory=self.pin_memory,
-                    use_nondetMultiThreadedAugmenter=False
+                    use_nondetMultiThreadedAugmenter=False,
+                    task_num=self.total_task_num, iter_each_task_epoch=int(self.num_batches_per_epoch // self.total_task_num)
                 )
                 self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
                                        also_print_to_console=False)

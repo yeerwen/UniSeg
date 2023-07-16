@@ -153,7 +153,7 @@ class MultiThreadedAugmenter_dodnet(object):
     """
 
     def __init__(self, data_loader, transform, num_processes, num_cached_per_queue=2, seeds=None, pin_memory=False,
-                 timeout=10, wait_time=0.02):
+                 timeout=10, wait_time=0.02, task_num=11, iter_each_task_epoch=50):
         self.timeout = timeout
         self.pin_memory = pin_memory
         self.transform = transform
@@ -176,9 +176,9 @@ class MultiThreadedAugmenter_dodnet(object):
         self.was_initialized = False
 
 
-        self.task_num = 11
+        self.task_num = task_num
         self.task_pool = multiprocessing.Manager().list()
-        self.task_pool.extend([50 for _ in range(self.task_num)])
+        self.task_pool.extend([iter_each_task_epoch for _ in range(self.task_num)])
 
         self.epoch_choice_id = multiprocessing.Manager().list()
         self.epoch_choice_id.extend([i for i in range(self.task_num)])

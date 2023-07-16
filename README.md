@@ -6,6 +6,9 @@ In this paper, we propose a Prompt-Driven Universal Segmentation model (UniSeg) 
   <img width="100%" alt="UniSeg illustration" src="github/Overview.png">
 </div>
 
+## News
+2023.07.17: We have updated the code to better support the new multi-task segmentation. You just need to modify the `self.task`, `self.task_class`, and `self.total_task_num` in the UniSeg_Trainer.
+
 ## Requirements
 CUDA 11.5<br />
 Python 3.8<br /> 

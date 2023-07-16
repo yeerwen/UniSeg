@@ -214,7 +214,8 @@ def get_moreDA_augmentation_uniseg(dataloader_train, dataloader_val, patch_size,
                             seeds_train=None, seeds_val=None, order_seg=1, order_data=3, deep_supervision_scales=None,
                             soft_ds=False,
                             classes=None, pin_memory=True, regions=None,
-                            use_nondetMultiThreadedAugmenter: bool = False):
+                            use_nondetMultiThreadedAugmenter: bool = False,
+                            task_num=11, iter_each_task_epoch=50):
     assert params.get('mirror') is None, "old version of params, use new keyword do_mirror"
 
     tr_transforms = []
@@ -334,7 +335,8 @@ def get_moreDA_augmentation_uniseg(dataloader_train, dataloader_val, patch_size,
     else:
         batchgenerator_train = MultiThreadedAugmenter_dodnet(dataloader_train, tr_transforms, params.get('num_threads'),
                                                       params.get("num_cached_per_thread"),
-                                                      seeds=seeds_train, pin_memory=pin_memory)
+                                                      seeds=seeds_train, pin_memory=pin_memory,
+                                                      task_num=task_num, iter_each_task_epoch=iter_each_task_epoch)
     # batchgenerator_train = SingleThreadedAugmenter(dataloader_train, tr_transforms)
     # import IPython;IPython.embed()
 
