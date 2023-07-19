@@ -109,7 +109,7 @@ cd UniSeg
     * "9": "brain tumors: edema, non-enhancing, and enhancing segmentation"
     * "10": "whole-body tumors segmentation"
   * `-num_image`: Channel number of the input image(s)
-  * `-modality`: "CT" or "MR" or "CT,PET"
+  * `-modality`: "CT" or "MR" (prostate) or "MR,MR,MR,MR" (brain tumors) or "CT,PET" (whole-body tumors)
   * `-spacing`: Spacing of resampled image(s)
 
 <div align="center">

@@ -216,7 +216,7 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
         couple_id = {"live": [1, 2], "kidn": [3, 4], "hepa": [5, 6], "panc": [7, 8], "colo": [9], "lung": [10],
                      "sple": [11], "sub-": [12]}
         id_2_name = {-1: "all", 0: "live", 1: "kidn", 2: "hepa", 3: "panc", 4: "colo", 5: "lung", 6: "sple", 7: "sub-"}
-    elif modality_used[0] == "MR" and num_image == 1:
+    elif modality_used[0] == "MR" and (num_image == 1 or num_image == 4):
         couple_id = {"pros": [13], "BraT": [14, 15, 16]}
         id_2_name = {-1: "all", 8: "pros", 9: "BraT"}
     elif modality_used[0] == "CT" and modality_used[1] == "PET"  and num_image == 2:
