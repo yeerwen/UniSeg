@@ -228,8 +228,9 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
 
     print("selected task id is ", id_2_name[task_id])
 
-    # self.task = {}
-    # self.task_class = {0: 3, 1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 4, 10: 2}
+    # (0:3) == (task_id: class number)
+    id_2_class = {0: 3, 1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 4, 10: 2}
+
     all_output_files = []
     for preprocessed in preprocessing:
         output_filename, (d, dct) = preprocessed
@@ -243,11 +244,15 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
         trainer.load_checkpoint_ram(params[0], False)
 
         if task_id != -1:
+            now_class_number = id_2_class[task_id]
+
             softmax = trainer.predict_preprocessed_data_return_seg_and_softmax(
                 d, do_mirroring=do_tta, mirror_axes=trainer.data_aug_params['mirror_axes'], use_sliding_window=True,
                 step_size=step_size, use_gaussian=True, all_in_gpu=all_in_gpu,
                 mixed_precision=mixed_precision, task_id=np.array([task_id]))[1]
-
+            print("softmax before cropping: ", softmax.shape)
+            softmax = softmax[:now_class_number] # avoid over-segmentation
+            print("softmax after cropping: ", softmax.shape)
             # for p in params[1:]:
             #     trainer.load_checkpoint_ram(p, False)
             #     softmax += trainer.predict_preprocessed_data_return_seg_and_softmax(
@@ -260,8 +265,7 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
             print("total softmax: ", total_argmax.shape)
             for now_id in range(len(id_2_name)-1):
                 now_id_name =  id_2_name[now_id]
-                afore_index = couple_id[now_id_name]
-
+                fore_index = couple_id[now_id_name]
 
                 softmax = trainer.predict_preprocessed_data_return_seg_and_softmax(
                     d, do_mirroring=do_tta, mirror_axes=trainer.data_aug_params['mirror_axes'], use_sliding_window=True,
@@ -270,7 +274,7 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
                 softmax_argmax = np.argmax(softmax, axis=0)
                 print(now_id, "softmax", softmax_argmax.shape)
                 soft_index = 1
-                for tmp_index in afore_index:
+                for tmp_index in fore_index:
                     total_argmax[softmax_argmax == soft_index] = tmp_index
                     soft_index += 1
             total_softmax = np.zeros(shape=(18, d.shape[1], d.shape[2], d.shape[3]))
