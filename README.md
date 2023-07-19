@@ -86,6 +86,8 @@ cd UniSeg
     * For the VS dataset: `CUDA_VISIBLE_DEVICES=0 nnUNet_n_proc_DA=32 nnUNet_train 3d_fullres UniSeg_Trainer_DS 61 0`
 
 ### Prediction on New Data
+* Download the [Upstream trained model](https://drive.google.com/file/d/1Ldgd5Ebc8VQrvGIpIgzUG2PTSDPUpEQJ/view?usp=sharing) and [configuration file](https://drive.google.com/file/d/1BtqdTSxGoSF4hXc3JUaSZG9uwiEo-SxR/view?usp=sharing).
+* Move them to `./nnUNet_trained_models/UniSeg_Trainer/3d_fullres/Task097_11task/UniSeg_Trainer__DoDNetPlans/fold_0/` and rename them to `model_final_checkpoint.model` and `model_final_checkpoint.model.pkl`, respectively.
 * `cd Upstream`
 * Copy `Upstream/nnunet` to replace `nnunet`, which is installed by `pip install nnunet`
 * Run `CUDA_VISIBLE_DEVICES=1 nnUNet_n_proc_DA=32 nnUNet_predict -i /data/userdisk0/ywye/nnUNet_raw/nnUNet_raw_data/Test/Image/ -o /data/userdisk0/ywye/nnUNet_raw/nnUNet_raw_data/Test/Predict/10/ -t 97 -m 3d_fullres  -tr UniSeg_Trainer -f 0 -task_id 7 -exp_name UniSeg_Trainer -num_image 1 -modality CT -spacing 3.0,1.5,1.5`
