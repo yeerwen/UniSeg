@@ -166,7 +166,7 @@ class Evaluator:
         self.metrics.sort()
 
         # get functions for evaluation
-        # somewhat convoluted, but allows users to define additonal metrics
+        # somewhat convoluted, but allows users to define additional metrics
         # on the fly, e.g. inside an IPython console
         _funcs = {m: ALL_METRICS[m] for m in self.metrics + self.advanced_metrics}
         frames = inspect.getouterframes(inspect.currentframe())

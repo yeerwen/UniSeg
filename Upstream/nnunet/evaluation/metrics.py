@@ -402,5 +402,5 @@ ALL_METRICS = {
     "Total Positives Test": total_positives_test,
     "Total Negatives Test": total_negatives_test,
     "Total Positives Reference": total_positives_reference,
-    "total Negatives Reference": total_negatives_reference
+    "Total Negatives Reference": total_negatives_reference
 }

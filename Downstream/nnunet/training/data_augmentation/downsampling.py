@@ -22,7 +22,7 @@ import numpy as np
 
 class DownsampleSegForDSTransform3(AbstractTransform):
     '''
-    returns one hot encodings of the segmentation maps if downsampling has occured (no one hot for highest resolution)
+    returns one hot encodings of the segmentation maps if downsampling has occurred (no one hot for highest resolution)
     downsampled segmentations are smooth, not 0/1
 
     returns torch tensors, not numpy arrays!

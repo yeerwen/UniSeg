@@ -184,6 +184,6 @@ class ApplyRandomBinaryOperatorTransform2(AbstractTransform):
                             was_added_mask = (res - workon) > 0
                             for oc in other_ch:
                                 data[b, oc][was_added_mask] = 0
-                            # if class was removed, leave it at backgound
+                            # if class was removed, leave it at background
         data_dict[self.key] = data
         return data_dict

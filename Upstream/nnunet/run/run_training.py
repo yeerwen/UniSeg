@@ -161,7 +161,7 @@ def main():
         trainer.save_best_checkpoint = False  # whether or not to save the best checkpoint according to
         # self.best_val_eval_criterion_MA
         trainer.save_intermediate_checkpoints = True  # whether or not to save checkpoint_latest. We need that in case
-        # the training chashes
+        # the training crashes
         trainer.save_latest_only = True  # if false it will not store/overwrite _latest but separate files each
 
     trainer.initialize(not validation_only)
@@ -177,7 +177,7 @@ def main():
                 # we start a new training. If pretrained_weights are set, use them
                 load_pretrained_weights(trainer.network, args.pretrained_weights)
             else:
-                # new training without pretraine weights, do nothing
+                # new training without pretrained weights, do nothing
                 pass
 
             trainer.run_training()
