@@ -9,7 +9,7 @@ In this paper, we propose a Prompt-Driven Universal Segmentation model (UniSeg) 
 ## News
 * 2023.07.17: We have updated the code to better support the new multi-task segmentation. You just need to modify the `self.task`, `self.task_class`, and `self.total_task_num` in the UniSeg_Trainer.
 * 2023.07.19: We have provided the configuration file for predicting new data. In addition, we have updated the new data prediction code to restrict the output categories for specified tasks.
-* 2023.10.13: 🎉🎉🎉Our UniSeg achieved second place on both tasks of [SegRap 2023](https://segrap2023.grand-challenge.org/final-ranking/) with simply fine-tuning on the dataset.
+* 2023.10.13: 🎉🎉🎉Our UniSeg achieved second place on both tasks of [MICCAI SegRap 2023](https://segrap2023.grand-challenge.org/final-ranking/) with simply fine-tuning on the dataset.
 
 
 ## Requirements
