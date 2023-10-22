@@ -133,8 +133,10 @@ If this code is helpful for your study, please cite:
 @article{ye2023uniseg,
   title={UniSeg: A Prompt-driven Universal Segmentation Model as well as A Strong Representation Learner},
   author={Yiwen Ye, Yutong Xie, Jianpeng Zhang, Ziyang Chen, and Yong Xia},
-  booktitle={Medical Image Computing and Computer Assisted Intervention -- MICCAI 2023},
-  year={2023}
+  booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention},
+  pages={508--518},
+  year={2023},
+  organization={Springer}
 }
 ```
 
