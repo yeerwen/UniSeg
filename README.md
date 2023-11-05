@@ -71,6 +71,7 @@ cd UniSeg
 
 ### Pretrained weights 
 * Upstream trained model is available in [UniSeg_11_Tasks](https://drive.google.com/file/d/1Ldgd5Ebc8VQrvGIpIgzUG2PTSDPUpEQJ/view?usp=sharing).
+* The [plans.pkl](https://drive.google.com/file/d/1ybtxtH13z4wqCQSRpD1JEKLMx6mH9xBV/view?usp=sharing) file.
 
 ### Downstream Tasks
 * `cd Downstream`
